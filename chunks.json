@@ -1,0 +1,134 @@
+[
+  {
+    "content": "Milvus 是一个开源的分布式向量数据库，专为大规模向量相似度检索设计。它支持稠密向量、稀疏向量以及两者的混合检索，常用于语义搜索、推荐系统和 RAG 等场景。",
+    "doc_id": 1,
+    "page": 1,
+    "section_path": "第1章 认识 Milvus > 1.1 Milvus 简介"
+  },
+  {
+    "content": "Milvus 采用存算分离架构，主要组件包括接入层 Proxy、协调服务 Coordinator、查询节点 Query Node、数据节点 Data Node、索引节点 Index Node，以及对象存储 MinIO、消息队列和元数据存储 etcd。",
+    "doc_id": 1,
+    "page": 2,
+    "section_path": "第1章 认识 Milvus > 1.2 系统架构"
+  },
+  {
+    "content": "collection 是 Milvus 中存储同类数据的基本单位，类似关系型数据库中的表。一个 collection 由 schema 定义，可以包含多个向量字段和标量字段，还可以按 partition 做逻辑分区。",
+    "doc_id": 1,
+    "page": 3,
+    "section_path": "第1章 认识 Milvus > 1.3 Collection 与 Schema"
+  },
+  {
+    "content": "Attu 是 Milvus 官方提供的独立图形化管理工具，面向开发者提供数据库管理、collection 浏览、数据查询和向量检索等功能。",
+    "doc_id": 2,
+    "page": 4,
+    "section_path": "第2章 查看与操作数据 > 2.1 Attu 图形化工具"
+  },
+  {
+    "content": "在 Attu 中可以查看 collection 的 schema、索引状态和数据量，也可以在查询页面按主键或过滤条件查看具体数据，适合开发调试和数据排查。",
+    "doc_id": 2,
+    "page": 5,
+    "section_path": "第2章 查看与操作数据 > 2.2 在 Attu 中查看数据"
+  },
+  {
+    "content": "通过 pymilvus 的 MilvusClient 可以用代码操作 Milvus：describe_collection 返回 schema 信息，get_collection_stats 返回行数，list_collections 列出所有 collection。",
+    "doc_id": 2,
+    "page": 6,
+    "section_path": "第2章 查看与操作数据 > 2.3 使用 Python SDK 查看数据"
+  },
+  {
+    "content": "除了 Attu 和 Python SDK，Milvus 还提供 RESTful API 和 WebUI。WebUI 适合快速查看集群状态和运行简单查询，生产环境的数据操作通常通过 SDK 完成。",
+    "doc_id": 2,
+    "page": 7,
+    "section_path": "第2章 查看与操作数据 > 2.4 其他操作方式"
+  },
+  {
+    "content": "创建 collection 前需要定义 schema，包括主键字段、向量字段和标量字段。主键可以设置 auto_id=True，让 Milvus 自动生成 INT64 主键。",
+    "doc_id": 3,
+    "page": 8,
+    "section_path": "第3章 Schema 与索引 > 3.1 定义 Schema"
+  },
+  {
+    "content": "标量字段可以设置 max_length（VARCHAR）、是否可空以及默认值；向量字段需要指定维度 dim，BGE-M3 输出的稠密向量维度是 1024。",
+    "doc_id": 3,
+    "page": 9,
+    "section_path": "第3章 Schema 与索引 > 3.2 字段参数"
+  },
+  {
+    "content": "HNSW 是一种基于图的近似最近邻索引，适合低延迟、高召回的场景。参数 M 控制每个节点的最大连接数，efConstruction 控制构建索引时的候选范围。",
+    "doc_id": 3,
+    "page": 10,
+    "section_path": "第3章 Schema 与索引 > 3.3 HNSW 索引"
+  },
+  {
+    "content": "稀疏向量使用 SPARSE_INVERTED_INDEX 倒排索引，通常配合 IP（内积）度量；稠密向量常用 COSINE、IP 或 L2 度量，索引和检索时使用的 metric_type 必须一致。",
+    "doc_id": 3,
+    "page": 11,
+    "section_path": "第3章 Schema 与索引 > 3.4 稀疏索引与度量方式"
+  },
+  {
+    "content": "建立索引后需要先 load collection 才能执行检索，load 会把索引和向量数据加载到查询节点内存；不再使用时可以 release_collection 释放资源。",
+    "doc_id": 3,
+    "page": 12,
+    "section_path": "第3章 Schema 与索引 > 3.5 加载与释放"
+  },
+  {
+    "content": "稠密检索基于语义向量，适合同义词、改写、跨语言等场景；稀疏检索基于词权重，适合专有名词、产品型号和精确关键词匹配。",
+    "doc_id": 4,
+    "page": 13,
+    "section_path": "第4章 检索方式 > 4.1 稠密检索与稀疏检索"
+  },
+  {
+    "content": "混合检索会同时执行稠密检索和稀疏检索，再用 RRF（Reciprocal Rank Fusion，倒数排名融合）合并两路结果，兼顾语义召回和关键词召回。",
+    "doc_id": 4,
+    "page": 14,
+    "section_path": "第4章 检索方式 > 4.2 混合检索与 RRF"
+  },
+  {
+    "content": "RRF 的公式是 score(d) = Σ 1 / (k + rank_i(d))，k 通常取 60。它只使用排名，不使用原始相似度，因此不需要对两路分数做归一化。",
+    "doc_id": 4,
+    "page": 15,
+    "section_path": "第4章 检索方式 > 4.3 RRF 计算公式"
+  },
+  {
+    "content": "Milvus 提供 hybrid_search 接口，配合 AnnSearchRequest 和 RRFRanker，可以在数据库侧完成多路检索和融合，减少客户端的数据传输。",
+    "doc_id": 4,
+    "page": 16,
+    "section_path": "第4章 检索方式 > 4.4 原生混合检索接口"
+  },
+  {
+    "content": "检索参数 ef 表示查询阶段的候选列表大小，增大 ef 通常能提高召回率，但也会增加查询延迟；需要根据数据规模和精度要求调节。",
+    "doc_id": 4,
+    "page": 17,
+    "section_path": "第4章 检索方式 > 4.5 查询参数 ef"
+  },
+  {
+    "content": "flush 会把内存中的增量数据写入持久化存储。刚插入数据就检索时，可以执行 flush 并配合 Strong 一致性，避免因同步延迟看不到数据。",
+    "doc_id": 5,
+    "page": 18,
+    "section_path": "第5章 一致性与运维 > 5.1 flush 与数据可见性"
+  },
+  {
+    "content": "Milvus 支持 Strong、Bounded、Eventually、Session 四种一致性级别；Strong 一致性保证读到最新数据，但延迟相对更高。",
+    "doc_id": 5,
+    "page": 19,
+    "section_path": "第5章 一致性与运维 > 5.2 一致性级别"
+  },
+  {
+    "content": "drop_collection 会删除整个 collection；delete 接口可以按主键或过滤条件删除数据。删除操作不会立即释放磁盘空间，需要等待 compaction。",
+    "doc_id": 5,
+    "page": 20,
+    "section_path": "第5章 一致性与运维 > 5.3 删除与空间回收"
+  },
+  {
+    "content": "BGE-M3 是 BAAI 发布的多语言嵌入模型，可以同时输出稠密向量、稀疏词权重和 ColBERT 多向量表示，适合检索和 RAG 场景。",
+    "doc_id": 6,
+    "page": 21,
+    "section_path": "第6章 BGE-M3 与 RAG > 6.1 BGE-M3 简介"
+  },
+  {
+    "content": "在 RAG 中可以把 BGE-M3 的稠密向量和稀疏词权重分别写入 Milvus 的 FLOAT_VECTOR 和 SPARSE_FLOAT_VECTOR 字段，再用混合检索提升召回效果。",
+    "doc_id": 6,
+    "page": 22,
+    "section_path": "第6章 BGE-M3 与 RAG > 6.2 稠密与稀疏向量入库"
+  }
+]

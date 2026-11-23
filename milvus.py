@@ -46,7 +46,7 @@ class MilvusOperator:
                 metric_type="COSINE",   # 构建索引时，相似度算法采用余弦相似度
 
                 # 以下两个参数涉及到 HNSW 索引的机制
-                # 具体见：https://claude.ai/share/9914bec2-f242-407e-b7fb-3966630133ce
+                # 具体见：https://milvus.io/docs/zh/hnsw.md
                 # M 表示构建索引时，每个节点的最大连接数，即每个向量点与周围多少个点建立邻居关系
                 # efConstruction 代表构建索引时的候选搜索范围，即选择周围邻居的范围，在范围内选择 M 个点建立邻居关系
                 # (ef 是候选列表大小的意思，construction 代表构建索引时的候选列表。此外在查询阶段，传入的 ef 代表搜索阶段的候选列表大小)
@@ -94,8 +94,10 @@ class MilvusOperator:
         """ 根据 query 查询最相似的 top_k 个文本 """
 
         print(f">>> 检索用户问题：{query}")
-        query_embedding = self.model.encode(query)
 
+        query_embedding = self.model.encode(query, normalize_embeddings=True)
+
+        self.client.load_collection(self.collection_name) # search 前需要先 load collection，此操作幂等
         hits = self.client.search(
             collection_name=self.collection_name, 
             data=[query_embedding], 
